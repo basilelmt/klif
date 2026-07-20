@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@theme {
+  --color-encre: #0c0d0f;
+  --color-roche: #17191c;
+  --color-papier: #e9e6df;
+  --color-brume: #989ca3;
+  --color-glacier: #a8cfe0;
+  --font-display: "Bricolage Grotesque", sans-serif;
+  --font-body: "Karla", sans-serif;
+  --font-mono: "Space Mono", monospace;
+
+  --animate-page-avant: page-avant 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-page-arriere: page-arriere 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes page-avant {
+    from {
+      opacity: 0;
+      transform: translateX(7%) rotateY(-16deg);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes page-arriere {
+    from {
+      opacity: 0;
+      transform: translateX(-7%) rotateY(16deg);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  --animate-fiche-fond: fiche-fond 0.25s ease-out both;
+  --animate-fiche-carte: fiche-carte 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes fiche-fond {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes fiche-carte {
+    from {
+      opacity: 0;
+      transform: translateY(28px) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+/* Le défilement doux est géré par Lenis (voir App.jsx) ;
+   scroll-behavior natif en secours quand il est inactif. */
+@media (prefers-reduced-motion: no-preference) {
+  html.lenis-inactif {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+body {
+  background-color: var(--color-encre);
+  color: var(--color-papier);
+  font-family: var(--font-body);
+}
+
+::selection {
+  background-color: var(--color-glacier);
+  color: var(--color-encre);
+}

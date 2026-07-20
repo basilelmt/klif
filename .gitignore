@@ -1,0 +1,9 @@
+node_modules/
+dist/
+dist-artifact/
+excalidraw.log
+*.tmp.mjs
+*.log
+
+# Local Netlify folder
+.netlify
