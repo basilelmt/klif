@@ -112,8 +112,10 @@ void main() {
 }
 `;
 
-/* 2 — FOIL HOLOGRAPHIQUE : irisation anisotrope qui balaie avec l'angle,
-   paillettes sur les zones claires (le titre de glace). */
+/* 2 — FOIL NACRÉ : vernis irisé discret. La nacre vit dans un reflet doux qui
+   suit le pointeur (ou dérive avec l'angle), strié par un micro-réseau de
+   diffraction ; palette désaturée tirée vers le glacier ; paillettes rares
+   réservées au titre et aux hautes lumières. */
 const SHADER_FOIL =
   PRELUDE +
   `
@@ -122,24 +124,37 @@ void main() {
   vec3 base = texture2D(uTex, uv).rgb;
   float lum = dot(base, vec3(0.299, 0.587, 0.114));
 
-  // Angle de vue -> position des bandes irisées
-  float ang = uTilt.y * 0.045 + uTilt.x * 0.02;
-  float band = uv.x * 1.4 - uv.y * 0.55 + ang * 2.4 + fbm(uv * 4.0) * 0.4;
-  vec3 iris = 0.5 + 0.5 * cos(6.28318 * (band + vec3(0.0, 0.33, 0.66)));
+  // Position du reflet : le pointeur s'il est là, sinon dérive avec l'angle
+  vec2 lampe = uPointer.x >= 0.0
+    ? uPointer
+    : vec2(0.5 - uTilt.y / 55.0, 0.38 - uTilt.x / 70.0);
+  vec2 ecart = (uv - lampe) * vec2(1.0, 1.35);
+  float voile = exp(-dot(ecart, ecart) * 5.5);
 
-  // Le foil accroche surtout les zones claires (titre, ciel, neige)
-  float masque = smoothstep(0.4, 0.95, lum) * 0.8 + 0.12;
-  float eclat = 0.25 + 0.6 * abs(sin(ang * 3.0 + 0.7));
+  // Micro-réseau de diffraction : fines stries irisées dans le voile
+  float ang = uTilt.y * 0.05 + uTilt.x * 0.022;
+  float phase = (uv.x * 0.9 - uv.y * 0.35) * 5.0 + ang * 2.6 + fbm(uv * 6.0) * 0.5;
+  vec3 iris = 0.5 + 0.5 * cos(6.28318 * (phase + vec3(0.0, 0.33, 0.66)));
+  iris = mix(vec3(dot(iris, vec3(0.333))), iris, 0.5) * vec3(0.85, 0.95, 1.05);
+  float reseau = 0.6 + 0.4 * sin(phase * 34.0 + fbm(uv * 20.0) * 3.0);
 
-  // Paillettes métalliques qui clignotent selon l'angle
-  vec2 grille = uv * vec2(48.0, 68.0);
-  vec2 vg = vor(grille + ang * 9.0);
-  float graine = hash(floor(grille) + floor(uTime * 1.5));
-  float paillette = pow(clamp(1.0 - vg.x, 0.0, 1.0), 16.0) * step(0.78, graine);
+  // Vernis sélectif : uniquement les zones claires ET peu saturées
+  // (le titre de glace, les chemises, la neige — pas le ciel bleu vif)
+  float satur = max(max(base.r, base.g), base.b) - min(min(base.r, base.g), base.b);
+  float masque = smoothstep(0.6, 0.9, lum) * smoothstep(0.45, 0.12, satur);
 
-  vec3 col = base
-    + iris * masque * eclat * 0.5
-    + paillette * masque * vec3(1.4, 1.35, 1.2);
+  // Nacre rasante sur tout le livre quand il est tres incline
+  float rasant = smoothstep(12.0, 26.0, abs(uTilt.y)) * 0.35;
+
+  // Paillettes rares et fines, seulement dans le voile et sur le foil
+  vec2 grille = uv * vec2(70.0, 100.0);
+  vec2 vg = vor(grille + ang * 6.0);
+  float graine = hash(floor(grille) + floor(uTime * 1.2));
+  float paillette = pow(clamp(1.0 - vg.x, 0.0, 1.0), 24.0) * step(0.93, graine);
+
+  vec3 col = base * (1.0 + voile * 0.08)
+    + iris * reseau * (voile * (0.05 + 0.3 * masque) + rasant * masque * 0.2)
+    + paillette * (voile + rasant) * masque * vec3(0.9, 0.95, 1.0) * 0.7;
 
   col *= 0.72 + 0.28 * smoothstep(0.0, 0.13, uv.x);
   gl_FragColor = vec4(col, 1.0);
@@ -437,7 +452,7 @@ function LivreShader({ shader }) {
 }
 
 function Labo() {
-  const [actif, setActif] = useState(0);
+  const [actif, setActif] = useState(1); // foil nacré par défaut (choix de Basile)
 
   useEffect(() => {
     const surTouche = (e) => {
