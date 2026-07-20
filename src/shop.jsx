@@ -1,4 +1,4 @@
-import { StrictMode, useEffect, useRef } from "react";
+import { StrictMode, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import "./index.css";
@@ -9,7 +9,7 @@ const STRIPE_URL = "#";
 const PRIX = null;
 
 const EPAISSEUR = 48; // px, épaisseur du livre
-const COUVERTURE = "/tome-01-couverture.jpg";
+const COUVERTURE = "/tome-01-couverture.webp";
 
 // Chant des pages : fines stries de papier
 const stries = (direction) =>
@@ -20,6 +20,15 @@ function Livre() {
   const livreRef = useRef(null);
   const ombreContactRef = useRef(null);
   const ombreNappeRef = useRef(null);
+  // La couverture apparaît en fondu quand elle est décodée ; en attendant, la
+  // face avant reste encre sombre — le livre garde sa forme, rien ne saute.
+  const couvertureRef = useRef(null);
+  const [couverturePrete, setCouverturePrete] = useState(false);
+
+  useEffect(() => {
+    // Image déjà en cache (préchauffée depuis le one-page) : pas de fondu.
+    if (couvertureRef.current?.complete) setCouverturePrete(true);
+  }, []);
 
   useEffect(() => {
     const scene = sceneRef.current;
@@ -150,15 +159,20 @@ function Livre() {
               transform: `translateZ(${EPAISSEUR / 2}px)`,
               borderRadius: "2px 6px 6px 2px",
               overflow: "hidden",
+              background: "#101215",
               boxShadow:
                 "0 0 0 1px rgba(0,0,0,0.45), inset 1px 1px 0 rgba(255,255,255,0.10), inset -1px -1px 0 rgba(0,0,0,0.30)",
               filter: "brightness(var(--lum-avant, 1))",
             }}
           >
             <img
+              ref={couvertureRef}
               src={COUVERTURE}
+              onLoad={() => setCouverturePrete(true)}
               alt="Couverture du tome 01 de Klif : Agus, Pit et Johan dans un alpage, la falaise en ligne de mire"
-              className="h-full w-full object-cover"
+              className={`h-full w-full object-cover transition-opacity duration-500 ${
+                couverturePrete ? "opacity-100" : "opacity-0"
+              }`}
               draggable={false}
             />
             <div

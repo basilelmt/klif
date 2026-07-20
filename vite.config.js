@@ -14,6 +14,11 @@ if (!process.env.KLIF_ARTIFACT) {
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  define: {
+    // Permet à App.jsx d'écarter le code inutile en artifact (préchauffage
+    // de la couverture boutique, dont le chemin n'y est pas inliné).
+    'import.meta.env.KLIF_ARTIFACT': JSON.stringify(Boolean(process.env.KLIF_ARTIFACT)),
+  },
   build: {
     rollupOptions: { input },
   },

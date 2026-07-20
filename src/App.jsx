@@ -155,6 +155,30 @@ function Reveal({ children, delay = 0, className = "" }) {
   );
 }
 
+/** Préchauffe, une fois la page chargée, les images absentes du DOM initial :
+    planches d'études des fiches persos et couverture 3D de la boutique.
+    Ainsi une modale ou un passage en boutique s'affichent sans attente. */
+function usePrechauffageImages() {
+  useEffect(() => {
+    const prechauffer = () => {
+      const sources = PERSONNAGES.map((perso) => perso.etudes);
+      // Hors artifact claude.ai : la boutique n'y existe pas, le chemin serait cassé.
+      if (!import.meta.env.KLIF_ARTIFACT) {
+        sources.push("/tome-01-couverture.webp");
+      }
+      for (const src of sources) {
+        new Image().src = src;
+      }
+    };
+    if (document.readyState === "complete") {
+      prechauffer();
+      return;
+    }
+    window.addEventListener("load", prechauffer, { once: true });
+    return () => window.removeEventListener("load", prechauffer);
+  }, []);
+}
+
 /** Progression de scroll globale (0 → 1). */
 function useScrollProgress() {
   const [progress, setProgress] = useState(0);
@@ -1229,6 +1253,7 @@ function PiedDePage() {
 
 export default function App() {
   useDefilementDoux();
+  usePrechauffageImages();
   const progress = useScrollProgress();
   const [lightbox, setLightbox] = useState(null);
 
