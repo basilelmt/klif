@@ -44,9 +44,10 @@ function Livre() {
       const sinA = Math.sin(rx * RAD);
       const cosB = Math.cos(ry * RAD);
       const sinB = Math.sin(ry * RAD);
-      const lum = (nx, ny, nz) => {
+      // Le papier des chants diffuse plus que l'encre : plancher plus haut
+      const lum = (nx, ny, nz, plancher = 0.55) => {
         const d = Math.max(0, nx * LAMPE.x + ny * LAMPE.y + nz * LAMPE.z);
-        return (0.55 + 0.55 * d).toFixed(3);
+        return (plancher + (1.1 - plancher) * d).toFixed(3);
       };
       livre.style.setProperty(
         "--lum-avant",
@@ -58,10 +59,10 @@ function Livre() {
       );
       livre.style.setProperty(
         "--lum-pages",
-        lum(cosB, sinB * sinA, -sinB * cosA),
+        lum(cosB, sinB * sinA, -sinB * cosA, 0.78),
       );
-      livre.style.setProperty("--lum-haut", lum(0, cosA, sinA));
-      livre.style.setProperty("--lum-bas", lum(0, -cosA, -sinA));
+      livre.style.setProperty("--lum-haut", lum(0, cosA, sinA, 0.78));
+      livre.style.setProperty("--lum-bas", lum(0, -cosA, -sinA, 0.78));
 
       // Ombre de contact quasi fixe ; la nappe s'étire et s'éclaircit à l'opposé
       ombreContact.style.transform = `translateX(${ry * -0.5}px)`;
