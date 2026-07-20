@@ -1024,7 +1024,8 @@ function Auteur() {
               <p className="mt-4 max-w-2xl text-lg leading-relaxed text-papier/85">
                 <strong className="font-bold">Gautier Sardou</strong> est
                 passionné de BD et manga depuis qu’il sait lire. Après 4 ans de
-                travail voici son œuvre médiévale fantastique, <em>Klif</em>.
+                travail voici son œuvre médiévale fantastique, <em>Klif</em> —
+                autoéditée, en toute indépendance.
               </p>
             </Reveal>
             <Reveal delay={200}>
@@ -1098,6 +1099,13 @@ function Alerte() {
             <strong className="font-bold text-glacier">
               {" "}
               dès la sortie, fin 2026
+            </strong>
+            .
+          </p>
+          <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-papier/70">
+            <em>Klif</em> est un manga indépendant&nbsp;: chaque précommande{" "}
+            <strong className="font-bold text-glacier">
+              finance directement l’impression du tome 01
             </strong>
             .
           </p>
@@ -1203,7 +1211,7 @@ function PiedDePage() {
         <p className="flex items-center gap-3">
           <img src="/logo.png" alt="Klif" className="h-9 w-auto" />
           <span className="font-mono text-[11px] tracking-[0.25em] text-brume">
-            TOME 01 — FIN 2026
+            MANGA AUTOÉDITÉ · TOME 01 — FIN 2026
           </span>
         </p>
         <nav
