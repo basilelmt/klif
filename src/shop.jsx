@@ -18,21 +18,55 @@ const stries = (direction) =>
 function Livre() {
   const sceneRef = useRef(null);
   const livreRef = useRef(null);
-  const ombreRef = useRef(null);
+  const ombreContactRef = useRef(null);
+  const ombreNappeRef = useRef(null);
 
   useEffect(() => {
     const scene = sceneRef.current;
     const livre = livreRef.current;
-    const ombre = ombreRef.current;
+    const ombreContact = ombreContactRef.current;
+    const ombreNappe = ombreNappeRef.current;
     const reduit = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+
+    // Lampe fixe en haut à gauche, légèrement devant la scène (vecteur normalisé)
+    const LAMPE = { x: -0.406, y: 0.507, z: 0.761 };
+    const RAD = Math.PI / 180;
 
     const applique = (rx, ry) => {
       livre.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
       livre.style.setProperty("--gx", `${50 + ry * 2.4}%`);
       livre.style.setProperty("--gy", `${50 - rx * 3}%`);
-      ombre.style.transform = `translateX(${ry * -1.6}px) scaleX(${1 - Math.abs(ry) / 90})`;
+
+      // Diffus par face : normale tournée · lampe, plancher d'ambiance à 0,55
+      const cosA = Math.cos(rx * RAD);
+      const sinA = Math.sin(rx * RAD);
+      const cosB = Math.cos(ry * RAD);
+      const sinB = Math.sin(ry * RAD);
+      const lum = (nx, ny, nz) => {
+        const d = Math.max(0, nx * LAMPE.x + ny * LAMPE.y + nz * LAMPE.z);
+        return (0.55 + 0.55 * d).toFixed(3);
+      };
+      livre.style.setProperty(
+        "--lum-avant",
+        lum(sinB, -cosB * sinA, cosB * cosA),
+      );
+      livre.style.setProperty(
+        "--lum-reliure",
+        lum(-cosB, -sinB * sinA, sinB * cosA),
+      );
+      livre.style.setProperty(
+        "--lum-pages",
+        lum(cosB, sinB * sinA, -sinB * cosA),
+      );
+      livre.style.setProperty("--lum-haut", lum(0, cosA, sinA));
+      livre.style.setProperty("--lum-bas", lum(0, -cosA, -sinA));
+
+      // Ombre de contact quasi fixe ; la nappe s'étire et s'éclaircit à l'opposé
+      ombreContact.style.transform = `translateX(${ry * -0.5}px)`;
+      ombreNappe.style.transform = `translateX(${ry * -2.2}px) scaleX(${1 + Math.abs(ry) / 80})`;
+      ombreNappe.style.opacity = `${0.9 - Math.abs(ry) * 0.008}`;
     };
 
     if (reduit) {
@@ -115,7 +149,9 @@ function Livre() {
               transform: `translateZ(${EPAISSEUR / 2}px)`,
               borderRadius: "2px 6px 6px 2px",
               overflow: "hidden",
-              boxShadow: "0 0 0 1px rgba(0,0,0,0.4)",
+              boxShadow:
+                "0 0 0 1px rgba(0,0,0,0.45), inset 1px 1px 0 rgba(255,255,255,0.10), inset -1px -1px 0 rgba(0,0,0,0.30)",
+              filter: "brightness(var(--lum-avant, 1))",
             }}
           >
             <img
@@ -164,7 +200,8 @@ function Livre() {
               height: "100%",
               transform: "translateX(-50%) rotateY(-90deg)",
               background:
-                "linear-gradient(to right, #0b0d10, #1a1e24 45%, #14171b)",
+                "linear-gradient(to right, transparent 92%, rgba(255,255,255,0.08)), linear-gradient(to right, rgba(0,0,0,0.35), transparent 25%), linear-gradient(to right, #0b0d10, #1a1e24 45%, #14171b)",
+              filter: "brightness(var(--lum-reliure, 1))",
             }}
           >
             <span
@@ -184,7 +221,8 @@ function Livre() {
               width: EPAISSEUR,
               height: "100%",
               transform: "translateX(-50%) rotateY(90deg)",
-              background: `linear-gradient(to bottom, rgba(0,0,0,0.18), transparent 12%, transparent 88%, rgba(0,0,0,0.22)), ${stries("to right")}`,
+              background: `linear-gradient(to right, rgba(0,0,0,0.35), transparent 22%, transparent 78%, rgba(0,0,0,0.28)), linear-gradient(to bottom, rgba(0,0,0,0.18), transparent 12%, transparent 88%, rgba(0,0,0,0.22)), ${stries("to right")}`,
+              filter: "brightness(var(--lum-pages, 1))",
             }}
           />
 
@@ -197,7 +235,8 @@ function Livre() {
               width: "100%",
               height: EPAISSEUR,
               transform: "translateY(-50%) rotateX(90deg)",
-              background: stries("to bottom"),
+              background: `linear-gradient(to right, rgba(0,0,0,0.30), transparent 15%, transparent 85%, rgba(0,0,0,0.25)), ${stries("to bottom")}`,
+              filter: "brightness(var(--lum-haut, 1))",
             }}
           />
           <div
@@ -208,20 +247,31 @@ function Livre() {
               width: "100%",
               height: EPAISSEUR,
               transform: "translateY(-50%) rotateX(-90deg)",
-              background: stries("to bottom"),
+              background: `linear-gradient(to right, rgba(0,0,0,0.30), transparent 15%, transparent 85%, rgba(0,0,0,0.25)), ${stries("to bottom")}`,
+              filter: "brightness(var(--lum-bas, 1))",
             }}
           />
         </div>
 
-        {/* Ombre au sol */}
+        {/* Ombres au sol : contact serrée + nappe diffuse qui s'étire */}
         <div
-          ref={ombreRef}
+          ref={ombreContactRef}
           aria-hidden
-          className="absolute left-1/2 top-full h-16 w-full -translate-x-1/2 translate-y-8"
+          className="absolute left-1/2 top-full h-6 w-[72%] -translate-x-1/2 translate-y-3"
           style={{
             background:
-              "radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,0.6), transparent 68%)",
-            filter: "blur(14px)",
+              "radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,0.62), transparent 70%)",
+            filter: "blur(5px)",
+          }}
+        />
+        <div
+          ref={ombreNappeRef}
+          aria-hidden
+          className="absolute left-1/2 top-full h-16 w-[115%] -translate-x-1/2 translate-y-7"
+          style={{
+            background:
+              "radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,0.5), transparent 68%)",
+            filter: "blur(18px)",
           }}
         />
       </div>
