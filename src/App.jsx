@@ -1102,13 +1102,6 @@ function Alerte() {
             </strong>
             .
           </p>
-          <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-papier/70">
-            <em>Klif</em> est un manga indépendant&nbsp;: chaque précommande{" "}
-            <strong className="font-bold text-glacier">
-              finance directement l’impression du tome 01
-            </strong>
-            .
-          </p>
         </Reveal>
 
         <Reveal delay={150}>
@@ -1211,7 +1204,7 @@ function PiedDePage() {
         <p className="flex items-center gap-3">
           <img src="/logo.png" alt="Klif" className="h-9 w-auto" />
           <span className="font-mono text-[11px] tracking-[0.25em] text-brume">
-            MANGA AUTOÉDITÉ · TOME 01 — FIN 2026
+            TOME 01 — FIN 2026
           </span>
         </p>
         <nav
