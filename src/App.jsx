@@ -539,8 +539,11 @@ function Liseuse({ onPleinEcran }) {
         className="pointer-events-none absolute inset-0 flex items-center justify-center"
       >
         {precedente < FIN ? (
-          <div className="flex h-full max-w-full items-center justify-center shadow-[0_30px_80px_rgba(0,0,0,0.6)]">
-            <div className="aspect-[1200/1697] h-full w-auto max-w-full">
+          <div className="flex h-full w-full items-center justify-center">
+            {/* Safari ≤ 18 : une boîte aspect-ratio à hauteur en % dans un flex
+                item shrink-to-fit se résout à largeur 0 — les wrappers doivent
+                être w-full, l'ombre vit sur la boîte ratio. */}
+            <div className="aspect-[1200/1697] h-full w-auto max-w-full shadow-[0_30px_80px_rgba(0,0,0,0.6)]">
               <img
                 src={PLANCHES[precedente].src}
                 alt=""
@@ -594,10 +597,12 @@ function Liseuse({ onPleinEcran }) {
                 <div
                   key={page}
                   onAnimationEnd={() => setPrecedente(null)}
-                  className={`${sens === 1 ? "animate-page-avant" : "animate-page-arriere"} h-full max-w-full`}
+                  className={`${sens === 1 ? "animate-page-avant" : "animate-page-arriere"} h-full w-full`}
                 >
-                  <div className="relative flex h-full max-w-full items-center justify-center shadow-[0_30px_80px_rgba(0,0,0,0.6)]">
-                    <div className="aspect-[1200/1697] h-full w-auto max-w-full">
+                  <div className="flex h-full w-full items-center justify-center">
+                    {/* Safari ≤ 18 : même contrainte que le fantôme — wrappers
+                        w-full, ombre et zones de feuilletage sur la boîte ratio. */}
+                    <div className="relative aspect-[1200/1697] h-full w-auto max-w-full shadow-[0_30px_80px_rgba(0,0,0,0.6)]">
                       <img
                         src={planche.src}
                         alt={planche.alt}
@@ -605,21 +610,21 @@ function Liseuse({ onPleinEcran }) {
                         height={1697}
                         className="h-full w-full object-contain"
                       />
+                      {/* Zones de feuilletage au clic, comme une vraie liseuse */}
+                      <button
+                        onClick={() => aller(-1)}
+                        disabled={page === 0}
+                        aria-hidden="true"
+                        tabIndex={-1}
+                        className="absolute inset-y-0 left-0 w-1/3 cursor-w-resize disabled:cursor-default"
+                      />
+                      <button
+                        onClick={() => aller(1)}
+                        aria-hidden="true"
+                        tabIndex={-1}
+                        className="absolute inset-y-0 right-0 w-2/3 cursor-e-resize"
+                      />
                     </div>
-                    {/* Zones de feuilletage au clic, comme une vraie liseuse */}
-                    <button
-                      onClick={() => aller(-1)}
-                      disabled={page === 0}
-                      aria-hidden="true"
-                      tabIndex={-1}
-                      className="absolute inset-y-0 left-0 w-1/3 cursor-w-resize disabled:cursor-default"
-                    />
-                    <button
-                      onClick={() => aller(1)}
-                      aria-hidden="true"
-                      tabIndex={-1}
-                      className="absolute inset-y-0 right-0 w-2/3 cursor-e-resize"
-                    />
                   </div>
                 </div>
               ) : (
