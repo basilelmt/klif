@@ -15,7 +15,13 @@ const RACINE = join(dirname(fileURLToPath(import.meta.url)), '..')
 const SORTIE = join(RACINE, 'dist-artifact')
 const TMP = join(SORTIE, 'tmp')
 
-execSync('npm run build', { cwd: RACINE, stdio: 'inherit' })
+// Build mono-entrée : sans KLIF_ARTIFACT le multi-entrées (shop) produit un
+// chunk JS partagé que l'inline ci-dessous ne saurait pas embarquer.
+execSync('npm run build', {
+  cwd: RACINE,
+  stdio: 'inherit',
+  env: { ...process.env, KLIF_ARTIFACT: '1' },
+})
 mkdirSync(join(TMP, 'planches'), { recursive: true })
 mkdirSync(join(TMP, 'persos'), { recursive: true })
 
