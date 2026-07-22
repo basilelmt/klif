@@ -20,32 +20,32 @@ import {
 const PLANCHES = [
   {
     src: "/planches/p2.jpg",
-    legende: "CH.04 — PL.09",
+    legende: "CH.04 - PL.09",
     alt: "Un héron géant surgit au-dessus des barques de pêcheurs",
   },
   {
     src: "/planches/p3.jpg",
-    legende: "CH.04 — PL.10",
+    legende: "CH.04 - PL.10",
     alt: "Planche noir et blanc du chapitre 4, page 10",
   },
   {
     src: "/planches/p4.jpg",
-    legende: "CH.04 — PL.11",
+    legende: "CH.04 - PL.11",
     alt: "Planche noir et blanc du chapitre 4, page 11",
   },
   {
     src: "/planches/p5.jpg",
-    legende: "CH.04 — PL.12",
+    legende: "CH.04 - PL.12",
     alt: "Planche noir et blanc du chapitre 4, page 12",
   },
   {
     src: "/planches/p6.jpg",
-    legende: "CH.04 — PL.13",
+    legende: "CH.04 - PL.13",
     alt: "Planche noir et blanc du chapitre 4, page 13",
   },
   {
     src: "/planches/p7.jpg",
-    legende: "CH.04 — PL.14",
+    legende: "CH.04 - PL.14",
     alt: "Planche noir et blanc du chapitre 4, page 14",
   },
 ];
@@ -55,7 +55,7 @@ const PERSONNAGES = [
     src: "/persos/chatain.jpg",
     nom: "Agus",
     resume:
-      "Le plus jeune des trois. Un grand rêveur à l’imagination sans limites — curieux, obstiné, et doué pour s’attirer des ennuis.",
+      "Le plus jeune des trois. Un grand rêveur à l’imagination sans limites - curieux, obstiné, et doué pour s’attirer des ennuis.",
     detail: [
       "Agus est le plus jeune de nos 3 héros. Un grand rêveur à l’imagination sans limites.",
       "Curieux et obstiné de nature, il s’attirera bien vite des ennuis quand son esprit ingénieux cherchera à résoudre des mystères auxquels il aurait mieux fallu ne jamais s’intéresser.",
@@ -69,7 +69,7 @@ const PERSONNAGES = [
     src: "/persos/blond.jpg",
     nom: "Johan",
     resume:
-      "L’infatigable tête brûlée de la bande, plus téméraire que vraiment courageux. Son instinct lui fait toujours prendre les bonnes décisions — enfin, c’est ce qu’on verra...",
+      "L’infatigable tête brûlée de la bande, plus téméraire que vraiment courageux. Son instinct lui fait toujours prendre les bonnes décisions - enfin, c’est ce qu’on verra...",
     detail: [
       "Johan, parlons-en ! Cette infatigable tête brûlée, ce héros plus téméraire et intrépide que vraiment courageux.",
       "Motivé par la compétition, c’est dans l’adversité et la concurrence qu’il révèle son plein potentiel.",
@@ -155,19 +155,13 @@ function Reveal({ children, delay = 0, className = "" }) {
   );
 }
 
-/** Préchauffe, une fois la page chargée, les images absentes du DOM initial :
-    planches d'études des fiches persos et couverture 3D de la boutique.
-    Ainsi une modale ou un passage en boutique s'affichent sans attente. */
+/** Préchauffe, une fois la page chargée, les planches d'études des fiches
+    persos (absentes du DOM initial) : les modales s'ouvrent alors sans attente. */
 function usePrechauffageImages() {
   useEffect(() => {
     const prechauffer = () => {
-      const sources = PERSONNAGES.map((perso) => perso.etudes);
-      // Hors artifact claude.ai : la boutique n'y existe pas, le chemin serait cassé.
-      if (!import.meta.env.KLIF_ARTIFACT) {
-        sources.push("/tome-01-couverture.webp");
-      }
-      for (const src of sources) {
-        new Image().src = src;
+      for (const perso of PERSONNAGES) {
+        new Image().src = perso.etudes;
       }
     };
     if (document.readyState === "complete") {
@@ -202,7 +196,7 @@ function useScrollProgress() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Altimètre — la signature du site                                    */
+/* Altimètre - la signature du site                                    */
 /* ------------------------------------------------------------------ */
 
 function Altimetre({ progress }) {
@@ -212,7 +206,7 @@ function Altimetre({ progress }) {
 
   return (
     <>
-      {/* Rail vertical — desktop */}
+      {/* Rail vertical - desktop */}
       <aside
         aria-hidden="true"
         className="fixed top-0 right-0 z-40 hidden h-screen w-16 flex-col items-center justify-between py-8 lg:flex"
@@ -236,7 +230,7 @@ function Altimetre({ progress }) {
         </p>
       </aside>
 
-      {/* Barre de progression — mobile */}
+      {/* Barre de progression - mobile */}
       <div
         aria-hidden="true"
         className="fixed inset-x-0 top-0 z-40 h-0.5 bg-papier/10 lg:hidden"
@@ -323,7 +317,7 @@ function Entete() {
         >
           <img
             src="/logo.png"
-            alt="Klif — retour en haut"
+            alt="Klif - retour en haut"
             className="h-11 w-auto"
           />
         </a>
@@ -341,12 +335,12 @@ function Entete() {
             </button>
           ))}
         </nav>
-        <a
-          href="/shop/"
+        <button
+          onClick={() => scrollTo("alerte")}
           className="bg-glacier px-4 py-2 font-mono text-[11px] font-bold tracking-[0.2em] text-encre uppercase transition-colors hover:bg-papier focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glacier"
         >
-          Commander
-        </a>
+          Être prévenu·e
+        </button>
       </div>
     </header>
   );
@@ -411,22 +405,12 @@ function Hero() {
             <p className="font-mono text-sm tracking-[0.3em] text-papier uppercase [text-shadow:0_1px_10px_rgba(12,13,15,0.9)]">
               Sortie <span className="text-glacier">fin 2026</span>
             </p>
-            <a
-              href="/shop/"
-              className="group flex items-center gap-3 bg-glacier px-6 py-3.5 font-mono text-xs font-bold tracking-[0.2em] text-encre uppercase transition-colors hover:bg-papier focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glacier"
-            >
-              Commander le tome 01
-              <ArrowRight
-                className="h-4 w-4 transition-transform group-hover:translate-x-1"
-                aria-hidden="true"
-              />
-            </a>
             <button
               onClick={() => scrollTo("alerte")}
-              className="group flex items-center gap-2.5 border border-papier/25 bg-encre/60 px-5 py-3 font-mono text-[11px] tracking-[0.2em] text-papier uppercase backdrop-blur-sm transition-colors hover:border-glacier hover:text-glacier focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glacier"
+              className="group flex items-center gap-3 bg-glacier px-6 py-3.5 font-mono text-xs font-bold tracking-[0.2em] text-encre uppercase transition-colors hover:bg-papier focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glacier"
             >
               <Bell
-                className="h-3.5 w-3.5 transition-transform group-hover:-rotate-12"
+                className="h-4 w-4 transition-transform group-hover:-rotate-12"
                 aria-hidden="true"
               />
               Être prévenu de la sortie
@@ -474,7 +458,7 @@ function Histoire() {
               quittent leur vallée pour tenter l’ascension. Une seule porte
               d’entrée&nbsp;:
               <strong className="font-bold text-papier"> Midborg</strong>, la
-              ville par laquelle transitent tous les aventuriers du continent —
+              ville par laquelle transitent tous les aventuriers du continent -
               et la seule à délivrer le{" "}
               <strong className="font-bold text-papier">KLIF&nbsp;PASS</strong>.
             </p>
@@ -565,7 +549,7 @@ function Liseuse({ onPleinEcran }) {
         {precedente < FIN ? (
           <div className="flex h-full w-full items-center justify-center">
             {/* Safari ≤ 18 : une boîte aspect-ratio à hauteur en % dans un flex
-                item shrink-to-fit se résout à largeur 0 — les wrappers doivent
+                item shrink-to-fit se résout à largeur 0 - les wrappers doivent
                 être w-full, l'ombre vit sur la boîte ratio. */}
             <div className="aspect-[1200/1697] h-full w-auto max-w-full shadow-[0_30px_80px_rgba(0,0,0,0.6)]">
               <img
@@ -596,14 +580,14 @@ function Liseuse({ onPleinEcran }) {
           </h2>
           <p className="mt-4 max-w-xl text-lg leading-relaxed text-brume">
             Un petit passage du chapitre 04, quelque part sur la route de
-            Midborg. Six planches — le reste se lira sur papier.
+            Midborg. Six planches - le reste se lira sur papier.
           </p>
         </Reveal>
 
         <Reveal delay={150}>
           <div
             role="group"
-            aria-label="Liseuse d’extrait — flèches gauche et droite pour tourner les pages"
+            aria-label="Liseuse d’extrait - flèches gauche et droite pour tourner les pages"
             tabIndex={0}
             onKeyDown={surTouche}
             onTouchStart={(e) => {
@@ -624,7 +608,7 @@ function Liseuse({ onPleinEcran }) {
                   className={`${sens === 1 ? "animate-page-avant" : "animate-page-arriere"} h-full w-full`}
                 >
                   <div className="flex h-full w-full items-center justify-center">
-                    {/* Safari ≤ 18 : même contrainte que le fantôme — wrappers
+                    {/* Safari ≤ 18 : même contrainte que le fantôme - wrappers
                         w-full, ombre et zones de feuilletage sur la boîte ratio. */}
                     <div className="relative aspect-[1200/1697] h-full w-auto max-w-full shadow-[0_30px_80px_rgba(0,0,0,0.6)]">
                       <img
@@ -665,17 +649,11 @@ function Liseuse({ onPleinEcran }) {
                     <br />
                     <span className="text-glacier">fin 2026.</span>
                   </p>
-                  <a
-                    href="/shop/"
-                    className="bg-glacier px-6 py-3.5 font-mono text-xs font-bold tracking-[0.2em] text-encre uppercase transition-colors hover:bg-papier focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glacier"
-                  >
-                    Commander le tome 01
-                  </a>
                   <button
                     onClick={() => scrollTo("alerte")}
-                    className="font-mono text-[11px] tracking-[0.2em] text-brume uppercase underline underline-offset-4 transition-colors hover:text-glacier focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glacier"
+                    className="bg-glacier px-6 py-3.5 font-mono text-xs font-bold tracking-[0.2em] text-encre uppercase transition-colors hover:bg-papier focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glacier"
                   >
-                    ou être prévenu·e de la sortie
+                    Être prévenu·e de la sortie
                   </button>
                 </div>
               )}
@@ -816,7 +794,7 @@ function Lightbox({ index, onFermer, onNaviguer }) {
 }
 
 /** Sur écran tactile (pas de survol), colore la carte quand elle traverse
-    la bande centrale du viewport — équivalent scroll du hover desktop. */
+    la bande centrale du viewport - équivalent scroll du hover desktop. */
 function useCouleurAuScroll() {
   const ref = useRef(null);
   const [actif, setActif] = useState(false);
@@ -827,7 +805,7 @@ function useCouleurAuScroll() {
     if (!node) return;
     // Pas d'IntersectionObserver + rootMargin ici : le rootMargin est ignoré
     // dans l'iframe cross-origin des artifacts claude.ai. On teste la ligne
-    // médiane du viewport à la main — une seule carte peut la contenir.
+    // médiane du viewport à la main - une seule carte peut la contenir.
     let raf = 0;
     const verifier = () => {
       cancelAnimationFrame(raf);
@@ -950,7 +928,7 @@ function FichePerso({ perso, onFermer }) {
             className="mt-6 w-full bg-papier p-2"
           />
           <p className="mt-3 font-mono text-[10px] tracking-[0.2em] text-brume/60 uppercase">
-            Études de personnage — Quentin Gaulupeau
+            Études de personnage - Quentin Gaulupeau
           </p>
         </div>
       </article>
@@ -1024,7 +1002,7 @@ function Auteur() {
               <p className="mt-4 max-w-2xl text-lg leading-relaxed text-papier/85">
                 <strong className="font-bold">Gautier Sardou</strong> est
                 passionné de BD et manga depuis qu’il sait lire. Après 4 ans de
-                travail voici son œuvre médiévale fantastique, <em>Klif</em> —
+                travail voici son œuvre médiévale fantastique, <em>Klif</em> -
                 autoéditée, en toute indépendance.
               </p>
             </Reveal>
@@ -1089,47 +1067,24 @@ function Alerte() {
             <span>LE SOMMET</span>
           </p>
           <h2 className="font-display text-4xl leading-[1.02] font-extrabold tracking-tight text-papier sm:text-6xl">
-            Commande le tome 01
+            Sois au sommet
             <br />
             <span className="text-brume">avant tout le monde.</span>
           </h2>
           <p className="mx-auto mt-6 max-w-md text-lg leading-relaxed text-papier/85">
-            Les précommandes sont ouvertes. Ton exemplaire réservé
-            aujourd’hui, dans ta boîte aux lettres
+            Un email à la sortie du tome 01, fin 2026 - et une{" "}
             <strong className="font-bold text-glacier">
-              {" "}
-              dès la sortie, fin 2026
-            </strong>
-            .
+              planche inédite en avant-première
+            </strong>{" "}
+            pour patienter. Rien d’autre, promis.
           </p>
         </Reveal>
 
         <Reveal delay={150}>
-          <a
-            href="/shop/"
-            className="mt-10 inline-flex items-center gap-3 bg-glacier px-8 py-4 font-mono text-xs font-bold tracking-[0.2em] text-encre uppercase transition-colors hover:bg-papier focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glacier"
-          >
-            Commander le tome 01
-            <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </a>
-        </Reveal>
-
-        <Reveal delay={250}>
-          <div className="mt-16 border-t border-papier/10 pt-10">
-            <p className="font-mono text-xs tracking-[0.25em] text-brume">
-              OU SOIS PRÉVENU·E À LA SORTIE
-            </p>
-            <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-papier/70">
-              Un email à la sortie du tome 01 — et une{" "}
-              <strong className="font-bold text-glacier">
-                planche inédite en avant-première
-              </strong>{" "}
-              pour patienter. Rien d’autre, promis.
-            </p>
-            {statut === "envoye" ? (
+          {statut === "envoye" ? (
             <div
               role="status"
-              className="mx-auto mt-6 flex max-w-md items-center gap-4 border border-glacier/40 bg-roche px-6 py-5 text-left"
+              className="mx-auto mt-10 flex max-w-md items-center gap-4 border border-glacier/40 bg-roche px-6 py-5 text-left"
             >
               <Check
                 className="h-6 w-6 shrink-0 text-glacier"
@@ -1138,7 +1093,7 @@ function Alerte() {
               <p className="text-papier">
                 <strong className="font-bold">Bien reçu.</strong>{" "}
                 <span className="text-brume">
-                  Rendez-vous à la sortie du tome 01, fin 2026 — ta planche
+                  Rendez-vous à la sortie du tome 01, fin 2026 - ta planche
                   bonus arrive bientôt.
                 </span>
               </p>
@@ -1147,7 +1102,7 @@ function Alerte() {
             <form
               onSubmit={soumettre}
               noValidate
-              className="mx-auto mt-6 max-w-md"
+              className="mx-auto mt-10 max-w-md"
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:gap-0">
                 <label htmlFor="email" className="sr-only">
@@ -1182,7 +1137,7 @@ function Alerte() {
                   role="alert"
                   className="mt-3 text-left text-sm text-glacier"
                 >
-                  Cette adresse ne semble pas valide — vérifie et réessaie.
+                  Cette adresse ne semble pas valide - vérifie et réessaie.
                 </p>
               )}
               <p className="mt-4 text-left font-mono text-[11px] leading-relaxed tracking-wide text-brume/70">
@@ -1190,7 +1145,6 @@ function Alerte() {
               </p>
             </form>
           )}
-          </div>
         </Reveal>
       </div>
     </section>
@@ -1204,19 +1158,13 @@ function PiedDePage() {
         <p className="flex items-center gap-3">
           <img src="/logo.png" alt="Klif" className="h-9 w-auto" />
           <span className="font-mono text-[11px] tracking-[0.25em] text-brume">
-            TOME 01 — FIN 2026
+            TOME 01 - FIN 2026
           </span>
         </p>
         <nav
           aria-label="Liens de bas de page"
           className="flex flex-wrap gap-x-6 gap-y-2"
         >
-          <a
-            href="/shop/"
-            className="font-mono text-[11px] tracking-[0.2em] text-glacier uppercase transition-colors hover:text-papier focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glacier"
-          >
-            Boutique
-          </a>
           <a
             href="#"
             className="font-mono text-[11px] tracking-[0.2em] text-brume uppercase transition-colors hover:text-papier focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glacier"
@@ -1241,7 +1189,7 @@ function PiedDePage() {
           </a>
         </nav>
         <p className="font-mono text-[11px] tracking-[0.15em] text-brume/60">
-          © 2026 — Tous droits réservés
+          © 2026 - Tous droits réservés
         </p>
       </div>
     </footer>
