@@ -7,3 +7,8 @@ excalidraw.log
 
 # Local Netlify folder
 .netlify
+
+# Scans source haute résolution des planches (les versions servies sont dans public/)
+/chapitre*.jpg
+/couverture dossier*.jpg
+/logo.png
